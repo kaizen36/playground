@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from util import sigmoid, softmax
+from util import sigmoid, tanh, softmax
 from util import classification_rate, cross_entropy, predict
 from util import y_indicator
 
@@ -24,6 +24,8 @@ class ANN:
         '''
         self.M = M
         self.activation = activation
+        self.costs = []
+        self.rates = []
 
     def init_weights(self, Min, Mout):
         '''
@@ -46,7 +48,7 @@ class ANN:
         '''
         Min, Mout = int(Min), int(Mout)
         
-        W = np.random.randn(Min, Mout)
+        W = np.random.randn(Min, Mout) 
         b = np.random.randn(Mout)
         return W, b
 
@@ -55,19 +57,36 @@ class ANN:
         A = Z.dot(V) + c 
         return softmax(A), Z
 
-    def fit(self, X, T):
+
+    def fit(self, X, Y, nepochs=100, learning_rate=0.001, L2=0.1):
         N, D = X.shape
-        Yind = y_indicator(T)
-        _, K = Yind.shape
+        T = y_indicator(Y)
+        _, K = T.shape
 
         W, b = self.init_weights(D, self.M)
         V, c = self.init_weights(self.M, K)
 
-        pY, Z = self.forward(X, W, b, V, c)
-        Y = predict(pY)
+        for i in range(nepochs):
+            pY, Z = self.forward(X, W, b, V, c)
+            P = predict(pY)
 
-        print(classification_rate(T, Y))
-        print(cross_entropy(T, pY))
+            cost = cross_entropy(T, pY)
+            self.costs.append(cost)
+            rate = classification_rate(Y, P)
+            self.rates.append(rate)
+
+            if i % 10:
+                print('Classification rate:', rate)
+                print('Cost:', cost)
+
+            V -= learning_rate * Z.T.dot(pY-T)
+            c -= learning_rate * (pY-T).sum()
+
+            dZ = (pY-T).dot(V.T) * (1-Z*Z)
+            W -= learning_rate * X.T.dot(dZ)
+            b -= learning_rate * dZ.sum(axis=0)
+
+        return P
 
 def rotate(v, a):
     '''
@@ -105,12 +124,19 @@ def plot_data(X, Y, columns=(0,1)):
 
 if __name__ == '__main__':
 
-     N = 100
-     D = 2
-     K = 4
+    N = 100
+    D = 2
+    K = 3
 
-     X, Y = create_data(N, D, K) 
-     plot_data(X, Y)
+    X, Y = create_data(N, D, K) 
+    plot_data(X, Y)
 
-     model = ANN()
-     model.fit(X, Y)
+    model = ANN(activation=tanh)
+    P = model.fit(X, Y)
+    plot_data(X, P)
+
+    plt.plot(model.costs)
+    plt.show()
+
+    plt.plot(model.rates)
+    plt.show()

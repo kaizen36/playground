@@ -1,5 +1,12 @@
 import numpy as np
 
+'''
+Y = class labels
+P = predictions 
+T = target indicator matrix of Y
+pY = P(Y|X)
+'''
+
 # Useful little functions
 
 def tanh(X):
@@ -17,13 +24,13 @@ def softmax(A):
 
 # Scoring
 
-def classification_rate(T, Y):
-    '''T = targets, Y = predictions.'''
-    return np.mean(T==Y)
+def classification_rate(Y, P):
+    '''Y = true, P = predictions.'''
+    return np.mean(Y==P)
 
-def cross_entropy(T, Y):
-    '''T = targets, Y = predictions.'''
-    return -1 * (T*np.log(Y)).sum()
+def cross_entropy(T, pY):
+    '''T = targets, pY = predictions.'''
+    return -np.mean(T*np.log(pY))
 
 def predict(pY):
     return np.argmax(pY, axis=1)
