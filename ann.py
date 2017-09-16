@@ -10,7 +10,7 @@ class ANN:
 
     def __init__(self, 
             M=2, 
-            activation=sigmoid
+            activation=tanh
             ):
         '''
         ANN class for 1 hidden layer, size M.
@@ -58,7 +58,7 @@ class ANN:
         return softmax(A), Z
 
 
-    def fit(self, X, Y, nepochs=100, learning_rate=0.001, L2=0.1):
+    def fit(self, X, Y, nepochs=100, learning_rate=0.001, L2=0.01):
         N, D = X.shape
         T = y_indicator(Y)
         _, K = T.shape
@@ -75,7 +75,7 @@ class ANN:
             rate = classification_rate(Y, P)
             self.rates.append(rate)
 
-            if i % 10:
+            if i % 10 == 0:
                 print('Classification rate:', rate)
                 print('Cost:', cost)
 
@@ -87,56 +87,3 @@ class ANN:
             b -= learning_rate * dZ.sum(axis=0)
 
         return P
-
-def rotate(v, a):
-    '''
-    Rotate vector v by angle a (rad).
-    '''
-    R = np.array([ [ np.cos(a), np.sin(a)], 
-                   [-np.sin(a), np.cos(a)] ])
-    return R.dot(v)
-
-def create_data(N, D, K):
-    '''
-    Create a random dataset consisting of D-dimensional Gaussian
-    blobs, K classes and N items per class.
-    '''
-    center = np.array([2, 0])
-    rot_angle = 2 * np.pi / float(K)
-
-    X_list = []
-    for i in range(K):
-        X = np.random.randn(N, D) + center
-        X_list.append(X)
-        center = rotate(center, rot_angle)
-
-    X = np.concatenate(X_list)
-    Y = np.array([i for i in range(K) for j in range(N)])
-
-    return X, Y
-
-def plot_data(X, Y, columns=(0,1)):
-    if X.shape[1] >= 2:
-        plt.scatter(X[:, columns[0]], X[:, columns[1]], c=Y)
-        plt.show()
-    else:
-        print('X is 1d. Nothing to plot!')
-
-if __name__ == '__main__':
-
-    N = 100
-    D = 2
-    K = 3
-
-    X, Y = create_data(N, D, K) 
-    plot_data(X, Y)
-
-    model = ANN(activation=tanh)
-    P = model.fit(X, Y)
-    plot_data(X, P)
-
-    plt.plot(model.costs)
-    plt.show()
-
-    plt.plot(model.rates)
-    plt.show()
