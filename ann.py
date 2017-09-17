@@ -19,8 +19,8 @@ class ANN:
         ----------
         M: int
             hidden layer size
-        activation: func
-            method for activation function
+        activation: str
+            label for activation function method
         '''
         self.M = M
         if activation == 'tanh':

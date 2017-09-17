@@ -23,10 +23,6 @@ def placeholders(N, D, K):
     tfY = tf.placeholder(tf.float32, [None, K])
     return tfX, tfY
 
-def cost(pY, T):
-    return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pY, labels=T))
-
-
 
 if __name__ == '__main__':
 
@@ -45,7 +41,7 @@ if __name__ == '__main__':
     V, c = initialise_weights(M, K)
 
     pY = forward(tfX, W, b, V, c)
-    c = cost(pY, tfY)
+    c = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pY, labels=T))
 
     learning_rate = 0.05
     epochs = 1000
