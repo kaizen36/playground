@@ -2,15 +2,15 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from util import sigmoid, tanh, softmax
+from util import sigmoid, tanh, relU, softmax
 from util import classification_rate, cross_entropy, predict
 from util import y_indicator
 
 class ANN:
 
     def __init__(self, 
-            M=2, 
-            activation=tanh
+            M=10, 
+            activation='tanh'
             ):
         '''
         ANN class for 1 hidden layer, size M.
@@ -23,7 +23,12 @@ class ANN:
             method for activation function
         '''
         self.M = M
-        self.activation = activation
+        if activation == 'tanh':
+            self.activation = tanh
+        elif activation == 'sigmoid':
+            self.activation = sigmoid
+        elif activation == 'relU':
+            self.activation = relU
         self.costs = []
         self.rates = []
 
@@ -48,26 +53,20 @@ class ANN:
         '''
         Min, Mout = int(Min), int(Mout)
         
-        W = np.random.randn(Min, Mout) 
-        b = np.random.randn(Mout)
-        return W, b
-
-    def forward(self, X, W, b, V, c):
-        Z = self.activation(X.dot(W) + b)
-        A = Z.dot(V) + c 
-        return softmax(A), Z
-
+        W = np.random.randn(Min, Mout) / np.sqrt(Min + Mout)
+        b = np.zeros(Mout)
+        return W.astype(np.float32), b.astype(np.float32)
 
     def fit(self, X, Y, nepochs=100, learning_rate=0.001, L2=0.01):
         N, D = X.shape
         T = y_indicator(Y)
         _, K = T.shape
 
-        W, b = self.init_weights(D, self.M)
-        V, c = self.init_weights(self.M, K)
+        self.W, self.b = self.init_weights(D, self.M)
+        self.V, self.c = self.init_weights(self.M, K)
 
         for i in range(nepochs):
-            pY, Z = self.forward(X, W, b, V, c)
+            pY, Z = self.forward(X)
             P = predict(pY)
 
             cost = cross_entropy(T, pY)
@@ -79,11 +78,27 @@ class ANN:
                 print('Classification rate:', rate)
                 print('Cost:', cost)
 
-            V -= learning_rate * Z.T.dot(pY-T)
-            c -= learning_rate * (pY-T).sum()
+            self.V -= learning_rate * ( Z.T.dot(pY-T) + L2*self.V)
+            self.c -= learning_rate * ((pY-T).sum() + L2*self.c)
 
-            dZ = (pY-T).dot(V.T) * (1-Z*Z)
-            W -= learning_rate * X.T.dot(dZ)
-            b -= learning_rate * dZ.sum(axis=0)
+            if self.activation==tanh:
+                dZ = (pY-T).dot(self.V.T) * (1-Z*Z)
+            elif self.activation==sigmoid:
+                dZ = (pY-T).dot(self.V.T) * (1-Z)*Z
+            elif self.activation==relU:
+                dZ = (pY-T).dot(self.V.T) * (Z>0)
+
+            self.W -= learning_rate * (X.T.dot(dZ) + L2*self.W)
+            self.b -= learning_rate * (dZ.sum(axis=0) + L2*self.b)
 
         return P
+
+    def forward(self, X):
+        Z = self.activation(X.dot(self.W) + self.b)
+        A = Z.dot(self.V) + self.c 
+        return softmax(A), Z
+
+    def predict(self, X):
+        pY, _ = self.forward(X)
+        return predict(pY)
+
