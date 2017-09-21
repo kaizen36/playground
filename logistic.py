@@ -1,5 +1,4 @@
 import numpy as np 
-
 from util import sigmoid, predict
 from util import y_indicator, cross_entropy, classification_rate
 
@@ -8,48 +7,47 @@ class Logistic:
 	def __init__(self):
 		pass
 
-	def init_weights(self, D):
-		W = np.random.randn(D,1)
+	def init_weights(self, M1, M2):
+		W = np.random.randn(M1, M2) 
 		return W.astype(np.float32)
 
-	def fit(self, X, Y, learning_rate=0.01, L2=0.1, tol=0.1):
-		N, D = X.shape
-		T = y_indicator(Y)
-		_, K = T.shape
+	def fit(self, Xtrain, Xtest, Ytrain, Ytest, 
+			learning_rate=1e-5, L2=0.1, nepochs=10000):
+		N, D = Xtrain.shape
+		K = len(set(Ytrain))
 
-		self.W = self.init_weights(D)
+		Ttrain = y_indicator(Ytrain)
+		Ttest  = y_indicator(Ytest)
+		self.W = self.init_weights(D, K)
+		self.b = np.zeros(K)
 
-		deltaJ = 999999
-		costs, rates = [], []
+		self.costs_train, self.costs_test = [], []
 
-		counter = 0
-		while deltaJ>tol:
-			Z = X.dot(self.W)
-			pY = sigmoid(Z)
+		for i in range(nepochs):
+			Z = Xtrain.dot(self.W) + self.b
+			pYtrain = sigmoid(Z)
 
-			cost = cross_entropy(T, pY)
-			P = predict(pY)
-			rate = classification_rate(T, P)
+			Z = Xtest.dot(self.W) + self.b
+			pYtest = sigmoid(Z)
 
-			if counter % 10 == 0:
-				print('Cost:', cost)
-				print('Classification rate:', rate)
-			costs.append(cost)
-			rates.append(rate)
-			deltaJ = costs[-1] - cost
+			self.costs_train.append(cross_entropy(Ttrain, pYtrain))
+			self.costs_test.append(cross_entropy(Ttest, pYtest))
 
+			if i % 100 == 0:
+				Ptrain = predict(pYtrain)
+				Ptest  = predict(pYtest)
 
-
+				print(i, 'Classification rate (train):', classification_rate(Ytrain, Ptrain))
+				print(i, 'Classification rate (test): ',  classification_rate(Ytest, Ptest))
+	
 			# Gradient descent
-			dZ = (pY-Y)
-			self.W -= learning_rate * (dZ.dot(X) + L2*self.W)
+			dZ = (pYtrain-Ttrain)
+			self.W -= learning_rate * (Xtrain.T.dot(dZ) + L2*self.W)
+			self.b -= learning_rate * (dZ.sum(axis=0) + L2*self.b)
 
-			counter += 1
-
-		return P
 
 	def predict(self, X):
-		pY = sigmoid(W.dot(X))
-		return predict(pY)
+		pY = sigmoid(X.dot(self.W))
+		return np.argmax(pY, axis=1)
 
 

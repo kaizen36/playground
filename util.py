@@ -1,5 +1,5 @@
 import numpy as np
-
+from sklearn.decomposition import PCA
 '''
 Y = class labels
 P = predictions 
@@ -78,6 +78,21 @@ def balance_binary_data(X, Y):
     return np.vstack([X0_new, X1_new]), Y_new
 
 
+def pca_find_n_components(X):
+    N, D = X.shape
+    pca = PCA(n_components=D)
+    pca.fit(X)
+    pve = pca.explained_variance_ratio_
+    pve_cumsum = np.cumsum(sorted(pve)[::-1])
+    for i, p in enumerate(pve_cumsum):
+        if p>0.99:
+            return i
+
+def pca_transform(Xtrain, Xtest, Dout):
+    N, D = Xtrain.shape
+    pca = PCA(n_components=Dout)
+    pca.fit(Xtrain)
+    return pca.transform(Xtrain), pca.transform(Xtest)
 
 
 
