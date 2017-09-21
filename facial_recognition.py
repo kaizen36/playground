@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from util import get_binary_data, balance_binary_data
 from util import classification_rate
+from image_util import show_image
 from ann import ANN
 
 
@@ -48,18 +49,8 @@ def get_data(nrows=-1):
 
     return np.array(X) / 255.0, np.array(Y).astype(int)
 
-def show_image(x, label=None):
-    d = int(np.sqrt(len(x)))
-    X = x.reshape(d, d)
-    plt.imshow(X, cmap='Greys_r')
-    if label is not None:
-        plt.title(label)
-    plt.show()
 
-
-def show_images(n=10):
-    X, Y = get_data(nrows=n)
-
+def show_images(X, Y):
     for i in range(X.shape[0]):
         show_image(X[i], label_map[Y[i]])
 
@@ -68,10 +59,10 @@ def show_images(n=10):
             if prompt == 'Y':
                 break
 
-
 if __name__=='__main__':
 
-    # show_images(10)
+    X, Y = get_data(nrows=10)
+    show_images(X, Y)
 
     X, Y = get_data()
     X, Y = get_binary_data(X, Y)
