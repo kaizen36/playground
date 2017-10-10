@@ -16,7 +16,21 @@ def get_data(nrows=None):
 	Y = data['label'].values
 	return X, Y
 
+def get_normalised_data(nrows=None):
+	'''
+	Each image is 28x28=784 pixels, pixel values 0-255.
+	Normalise each feature to have zero mean and unit variance.
+	'''
+	from sklearn.preprocessing import scale
+	data = pd.read_csv('data/mnist/train.csv', nrows=nrows)
+	columns = ['pixel'+str(i) for i in range(784)]
+	X = data[columns].values 
+	X_scaled = scale(X) 
+	Y = data['label'].values
+	return X_scaled, Y
+
 def show_images(X, Y):
+	'''Show first 10 images.'''
 	for i in range(10):
 		show_image(X[i], label=str(Y[i]))
 
