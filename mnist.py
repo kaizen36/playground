@@ -24,7 +24,7 @@ def get_normalised_data(nrows=None):
 	from sklearn.preprocessing import scale
 	data = pd.read_csv('data/mnist/train.csv', nrows=nrows)
 	columns = ['pixel'+str(i) for i in range(784)]
-	X = data[columns].values 
+	X = data[columns].values.astype(np.float32) / 255.0
 	X_scaled = scale(X) 
 	Y = data['label'].values
 	return X_scaled, Y
