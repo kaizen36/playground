@@ -6,6 +6,7 @@ Facial recognition Kaggle challenge.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from itertools import islice
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from util import get_binary_data, balance_binary_data
@@ -16,7 +17,7 @@ from ann import ANN
 
 label_map = ['Anger', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
-def get_data(nrows=-1):
+def get_data(nrows=None):
     '''
     Column: Description
     emotion: class label (0-6)
@@ -28,14 +29,17 @@ def get_data(nrows=-1):
     X: size 2304 vectors normalised 0-1 for pixel intensities 0..225 
     Y: class labels
     '''
+    if nrows is not None:
+        # nrows+1 because first row is column labels
+        nrows += 1
 
     with open('data/fer2013/fer2013.csv') as f:
-        data = f.readlines()
+        data = list(islice(f, nrows))
 
     X, Y = [], []
 
     first_line = True
-    for line in data[:nrows]:
+    for line in data:
 
         # first line is column labels
         if first_line:

@@ -1,5 +1,5 @@
 # Simple 1-hidden layer NN with Tensorflow running on the mnist dataset
-# With mini batch gradient descent
+# With mini batch gradient descent (standard GD and RMSProp compared)
 
 import tensorflow as tf 
 import numpy as np 
@@ -80,7 +80,6 @@ def main():
                     print('Classification rate (train): {:.3f}'.format(classification_rate(pred, Ybatch)))
                     print('Classification rate (test): {:.3f}'.format(classification_rate(predtest, Ytest)))
                     
-
 
 
 if __name__=='__main__':
