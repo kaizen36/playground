@@ -52,39 +52,39 @@ class ANN:
         '''
         self.batch_counter = -1
 
-    def _init_weights(self, Min, Mout):
-        '''Initialise weights for weight matrix W and vector b
-        for input layer dimensions Min and output layer dimensions Mout.
+    # def _init_weights(self, Min, Mout):
+    #     '''Initialise weights for weight matrix W and vector b
+    #     for input layer dimensions Min and output layer dimensions Mout.
 
-        Parameters
-        ----------
-        Min: int
-            input dimensions
-        Mout: int
-            output layer dimensions
+    #     Parameters
+    #     ----------
+    #     Min: int
+    #         input dimensions
+    #     Mout: int
+    #         output layer dimensions
 
-        Returns
-        -------
-        W: nd-array (Min x Mout)
-            randomly initialised weight matrix
-        b: 1d-array (Mout)
-            bias vector of zeros
-        '''
-        W = tf.Variable(tf.random_normal((Min, Mout)))
-        b = tf.Variable(tf.zeros(Mout))
-        return W, b
+    #     Returns
+    #     -------
+    #     W: nd-array (Min x Mout)
+    #         randomly initialised weight matrix
+    #     b: 1d-array (Mout)
+    #         bias vector of zeros
+    #     '''
+    #     W = tf.Variable(tf.random_normal((Min, Mout)))
+    #     b = tf.Variable(tf.zeros(Mout))
+    #     return W, b
 
     def _cost(self, T, Yish):
         return tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels=T, logits=Yish))
 
-    def _Z(self, X, W, b, activation='relu'):
-        '''Evaluate the hidden layer Z values.'''
-        if activation == 'relu':
-            return tf.nn.relu(tf.matmul(X,W) + b)
-        elif activation == 'tanh':
-            return tf.tanh(tf.matmul(X,W) + b)
-        elif activation == 'sigmoid':
-            return tf.sigmoid(tf.matmul(X,W) + b)
+    # def _Z(self, X, W, b, activation='relu'):
+    #     '''Evaluate the hidden layer Z values.'''
+    #     if activation == 'relu':
+    #         return tf.nn.relu(tf.matmul(X,W) + b)
+    #     elif activation == 'tanh':
+    #         return tf.tanh(tf.matmul(X,W) + b)
+    #     elif activation == 'sigmoid':
+    #         return tf.sigmoid(tf.matmul(X,W) + b)
 
     # def _forward(self, X, W, b, V, c, activation='relu'):
     #     Z = self._Z(X, W, b, activation)
@@ -200,7 +200,7 @@ def main():
     from util import get_binary_data
     print('Get data')
     X, Y = get_data()
-    X, Y = get_binary_data(X, Y)
+    # X, Y = get_binary_data(X, Y)
 
     model = ANN()
     print('Fit')
