@@ -153,7 +153,7 @@ class Human:
         first_try = True
         while move not in possible_moves:
             if first_try:
-                move_raw = input("Your move:")
+                move_raw = input("Specify i,j coordinates for your move:")
                 first_try = False
             else:
                 move_raw = input("'{}' is not a valid move! Try again:".format(move_raw))
@@ -454,25 +454,29 @@ def main():
     player_o = Computer(Vo_init, env.o)
     # train(player_x, player_o, env, episodes=1000)
 
+    episodes = int(input('How smart do you want to make the computer? (0--10000):'))
     print('Training computer.')
-    for i in range(10000):
+    for i in range(episodes):
         if i % 100 == 0:
-            print('Playing training game #'+str(i))
+            print('Playing training game....#'+str(i))
         play_game(player_x, player_o, Environment())
-
-    play_game(player_x, player_o, Environment(), draw=True)
-
+    print(str(episodes) + ' games completed!')
     print('Computer is ready')
 
-    new_player_x = Computer(player_x.Vs, env.x, epsilon=0, verbose=True)
+    new_player_x = Computer(player_x.Vs, env.x, epsilon=0)#, verbose=True)
     human = Human(symbol=env.o)
     stop = False
     while not stop:
-        play_game(new_player_x, human, Environment(), draw=True)
-        print('Player {} wins!'.format(env.winner))
+        env.reset_board()
+        play_game(new_player_x, human, env, draw=True)
+        if env.winner is not None:
+            print('Player {} wins!'.format(env.winner))
+        else:
+            print("It's a tie!")
         stop_raw = input('Play again? [y]/n:')
         if stop_raw == 'n':
-            stop_raw = True
+            stop = True
+
 
 if __name__=='__main__':
     main()
