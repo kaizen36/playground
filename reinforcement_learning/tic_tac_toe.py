@@ -5,6 +5,7 @@ RL tic-tac-toe game.
 2=Player 2
 '''
 import numpy as np 
+import sys
 from itertools import product
 # from abc import ABCMeta, abstractmethod
 
@@ -151,14 +152,25 @@ class Human:
         possible_moves = self._possible_moves(env)
         move = None
         first_try = True
+        
+        # catch python2 v python3 differences in input vs raw_input
+        def _input23(prompt):
+            if sys.version_info[0] < 3:
+                return raw_input(prompt)
+            else:
+                return input(prompt)
+
         while move not in possible_moves:
             if first_try:
-                move_raw = input("Specify i,j coordinates for your move:")
+                move_raw = _input23("Specify i,j coordinates for your move:")
                 first_try = False
             else:
-                move_raw = input("'{}' is not a valid move! Try again:".format(move_raw))
+                move_raw = _input23("'{}' is not a valid move! Try again:".format(move_raw))
 
-            move = tuple([int(i) for i in move_raw.split(',')])
+            try:
+                move = tuple([int(i) for i in move_raw.split(',')])
+            except:
+                continue
 
         env.board[move[0], move[1]] = self.symbol
         if self.verbose:
