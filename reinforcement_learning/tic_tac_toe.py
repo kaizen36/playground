@@ -466,7 +466,13 @@ def main():
     player_o = Computer(Vo_init, env.o)
     # train(player_x, player_o, env, episodes=1000)
 
-    episodes = int(input('How smart do you want to make the computer? (0--10000):'))
+    def _input23(prompt):
+        if sys.version_info[0] < 3:
+            return raw_input(prompt)
+        else:
+            return input(prompt)
+
+    episodes = int(_input23('How smart do you want to make the computer? (0--10000):'))
     print('Training computer.')
     for i in range(episodes):
         if i % 100 == 0:
@@ -485,7 +491,7 @@ def main():
             print('Player {} wins!'.format(env.winner))
         else:
             print("It's a tie!")
-        stop_raw = input('Play again? [y]/n:')
+        stop_raw = _input23('Play again? [y]/n:')
         if stop_raw == 'n':
             stop = True
 
