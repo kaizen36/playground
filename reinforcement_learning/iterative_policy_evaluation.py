@@ -8,24 +8,27 @@ def print_values(values, grid):
     | 0.00 | 0.00 | 0.00 | 0.00 |
     -----------------------------
     '''
+    hline = '---------------------------------'
     v = list(values.values())[0]
     if isinstance(v, float):
-        fmt = ':.2f'
+        fmt = ':5.2f'
     else:
-        fmt = ''
+        fmt = ':5'
     for i in range(grid.height):
-        print('-----------------------------')
+        print(hline)
         for j in range(grid.width):
             fmt_str = '| {'+fmt+'} '
             print(fmt_str.format(values.get((i,j),0.)), end='')
         print('|')
-    print('-----------------------------')
+    print(hline)
 
 
-def main():
-    grid = standard_grid()
+def random_policy_evaluation(grid):
+    '''
+    Random policy -- equal prob of taking any of the possible
+    actions at each state
+    '''
     states_list = grid.all_states()
-
     Vs = {}
     for s in states_list:
         Vs[s] = 0.
@@ -54,8 +57,10 @@ def main():
                     
 
     print('For random actions policy')
-    print_values(Vs, grid)
+    print_values(Vs, grid)    
 
+
+def fixed_policy_evaluation(grid):
     '''
     Fixed policy -- take direct path to 'win' if not, go to 'lose'
     
@@ -63,12 +68,13 @@ def main():
     U  -  R -1
     U  R  R  U
     '''
+    states_list = grid.all_states()
+
     policy = dict()
     for s in [(0,0), (0,1), (0,2), (1,2), (2,1), (2,2)]:
         policy[s] = 'r'
     for s in [(1,0), (2,0), (2,3)]:
         policy[s] = 'u'
-    print_values(policy, grid)
 
     Vs = {}
     for s in states_list:
@@ -92,10 +98,16 @@ def main():
             break
 
     print('For fixed actions policy')
+    print_values(policy, grid)
+    print('V(s):')
     print_values(Vs, grid)
 
-                    
 
+def main():
+    grid = standard_grid()
+    
+    random_policy_evaluation(grid)
+    fixed_policy_evaluation(grid)
 
 
 if __name__=='__main__':

@@ -8,7 +8,8 @@ class Grid:
         width,
         height,
         rewards,
-        actions
+        actions,
+        windy=False         # stochastic state transitions
         ):
 
         self.i = start_coordinates[0]
@@ -103,7 +104,8 @@ def set_rewards(start, win, lose, wall, width, height, step_cost=0.1):
     '''
     if step_cost > 0:
         for s in rewards.keys():
-            rewards[s] -= step_cost
+            if s not in [win, lose, wall]:
+                rewards[s] -= step_cost
 
     return rewards
 
