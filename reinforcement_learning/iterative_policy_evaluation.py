@@ -60,21 +60,43 @@ def random_policy_evaluation(grid):
     print_values(Vs, grid)    
 
 
-def fixed_policy_evaluation(grid):
-    '''
-    Fixed policy -- take direct path to 'win' if not, go to 'lose'
-    
+def fixed_policy():
+    ''' 
     R  R  R +1
     U  -  R -1
     U  R  R  U
     '''
-    states_list = grid.all_states()
-
     policy = dict()
     for s in [(0,0), (0,1), (0,2), (1,2), (2,1), (2,2)]:
         policy[s] = 'r'
     for s in [(1,0), (2,0), (2,3)]:
         policy[s] = 'u'
+    return policy
+
+
+def fixed_policy2():
+    ''' 
+    R  R  R +1
+    U  -  U -1
+    U  L  U  L
+    '''
+    policy = dict()
+    for s in [(0,0), (0,1), (0,2)]:
+        policy[s] = 'r'
+    for s in [(1,0), (2,0), (1,2), (2,2)]:
+        policy[s] = 'u'
+    for s in [(2,1), (2,3)]:
+        policy[s] = 'l'
+    return policy
+
+
+def fixed_policy_evaluation(grid):
+    '''
+    Fixed policy -- take direct path to 'win' if not, go to 'lose'
+    '''
+    states_list = grid.all_states()
+
+    policy = fixed_policy()
 
     Vs = {}
     for s in states_list:

@@ -77,7 +77,7 @@ class PolicyIterator:
 
 
     @classmethod
-    def policy_iteration_loop(cls, grid):
+    def policy_iteration(cls, grid):
         pi = cls(grid)
 
         print('rewards:')
@@ -109,7 +109,7 @@ class PolicyIterator:
 
 def main():
     grid = standard_grid(step_cost = 0.1)
-    optimal_policy, optimal_Vs = PolicyIterator.policy_iteration_loop(grid)
+    optimal_policy, optimal_Vs = PolicyIterator.policy_iteration(grid)
     print('Found best policy!')
     print_values(optimal_policy, grid)
     print('Found best state values!')

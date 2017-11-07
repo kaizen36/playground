@@ -18,6 +18,7 @@ class Grid:
         self.height = height 
         self.rewards = rewards  # rewards for each state dict{(i,j): r}
         self.actions = actions  # u, d, l, r dict{(i,j): list(possible a)}
+        self.windy = windy
 
 
     def set_state(self, s):
@@ -35,9 +36,9 @@ class Grid:
         actions for that state
         '''
         if s in self.actions.keys():
-            return True
-        else:
             return False
+        else:
+            return True
 
 
     def _move_step(self, action):
@@ -60,13 +61,23 @@ class Grid:
         action: str
             'u', 'd', 'l' or 'r'
         '''
-        if action in self.actions[(self.i, self.j)]:
-            self._move_step(action)
+        allowed_actions = self.actions[(self.i, self.j)]
+        if action in allowed_actions:
+            if not self.windy:
+                # deterministic state transitions
+                self._move_step(action)
+            else:
+                # p=0.5 of doing what you want
+                # p=0.5/|a| of doing something else
+                if np.random.random() < 0.5 or len(allowed_actions)==1:
+                    self._move_step(action)
+                else:
+                    new_action = np.random.choice([a for a in allowed_actions if a!=action])
+                    self._move_step(new_action)
 
 
         # if no valid actions for that state, do nothing and 
         # return zero reward
-
         return self.rewards.get((self.i, self.j), 0.)
 
 
@@ -144,7 +155,7 @@ def set_actions(win, lose, wall, width, height):
 
 
 
-def standard_grid(step_cost=0.):
+def standard_grid(step_cost=0., windy=False):
     '''
     o  o  o  1
     o  w  o -1 
@@ -163,7 +174,7 @@ def standard_grid(step_cost=0.):
     rewards = set_rewards(start, win, lose, wall, width, height, step_cost=step_cost)
     actions = set_actions(win, lose, wall, width, height)
 
-    return Grid(start, width=4, height=3, rewards=rewards, actions=actions)
+    return Grid(start, width=4, height=3, rewards=rewards, actions=actions, windy=windy)
 
 
 def play_game():
