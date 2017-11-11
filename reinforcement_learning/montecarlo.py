@@ -5,6 +5,11 @@ import numpy as np
 
 GAMMA = 0.9
 
+def exploring_start(possible_starts):
+    start_state = possible_starts[np.random.choice(range(len(possible_starts)))]
+    return start_state
+
+
 def play_game(grid, policy):
     # start game at random position
     # useful for a deterministic policy where some states will never be visited

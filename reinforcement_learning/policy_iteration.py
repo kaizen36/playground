@@ -4,7 +4,7 @@ from iterative_policy_evaluation import print_values
 
 THRESHOLD = 1e-4
 GAMMA = 0.9
-ALL_POSSIBLE_ACTIONS = ['u', 'd', 'l', 'r']
+ALL_POSSIBLE_ACTIONS = ('u', 'd', 'l', 'r')
 
 # this world is deterministic
 
