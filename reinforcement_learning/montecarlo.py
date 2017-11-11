@@ -76,9 +76,26 @@ def main():
     Vs = {s:x[0] for s,x in Vs_with_counts.items()}
 
     print_values(Vs, grid)
-
+    return Vs 
 
 def main2():
+    grid = standard_grid(step_cost=0.)
+    policy = fixed_policy2()
+    print_values(grid.rewards, grid)
+    print_values(policy, grid)
+
+    Vs_with_counts = dict()
+    for t in range(100):
+        states_returns = play_game(grid, policy)
+        Vs_with_counts = aggregate_episode(states_returns, Vs_with_counts)
+
+    Vs = {s:x[0] for s,x in Vs_with_counts.items()}
+
+    print_values(Vs, grid)
+    return Vs 
+
+
+def main2_windy():
     print('windy gridworld')
     grid = standard_grid(step_cost=0., windy=True)
     policy = fixed_policy2()
@@ -99,4 +116,4 @@ def main2():
 
 if __name__=='__main__':
     main()
-    main2()
+    main2_windy()
